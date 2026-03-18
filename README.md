@@ -1,0 +1,3 @@
+对于源代码，需要在文件夹下创建一个子文件夹ffmpeg，然后将最新ffmpeg.exe放进去
+
+还是建议使用Release打包好的exe
