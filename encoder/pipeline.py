@@ -12,6 +12,8 @@ import copy
 from typing import Optional, Callable
 from pathlib import Path
 
+from ..ffmpeg_paths import get_bundled_ffmpeg_paths, resolve_ffmpeg_path
+
 from ..config.types import (
     EncodingConfig,
     EncodeMode,
@@ -28,27 +30,25 @@ from .colorspace import process_color_space
 class EncodingPipeline:
     def __init__(
         self,
-        ffmpeg_path: str = "ffmpeg",
+        ffmpeg_path: Optional[str] = None,
         progress_callback: Optional[Callable[[str, float], None]] = None,
         error_callback: Optional[Callable[[str], None]] = None
     ):
-        self.ffmpeg_path = ffmpeg_path
+        self.ffmpeg_path = resolve_ffmpeg_path(ffmpeg_path)
         self.progress_callback = progress_callback
         self.error_callback = error_callback
         self._process = None
         self._cancelled = False
         
-        self._system_ffmpeg = self._get_system_ffmpeg_path()
-        self._video_ffmpeg = self._system_ffmpeg or ffmpeg_path
+        self._modern_ffmpeg, self._legacy_ffmpeg = get_bundled_ffmpeg_paths()
+        self._system_ffmpeg = self._modern_ffmpeg or self._legacy_ffmpeg
+        self._video_ffmpeg = self.ffmpeg_path
         self.builder = FFmpegCommandBuilder(self._video_ffmpeg, legacy_mode=False)
         self._system_builder = FFmpegCommandBuilder(self._system_ffmpeg, legacy_mode=False) if self._system_ffmpeg else None
     
     def _get_system_ffmpeg_path(self) -> Optional[str]:
-        package_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        bundled_ffmpeg = os.path.join(package_dir, "ffmpeg", "ffmpeg.exe")
-        if os.path.exists(bundled_ffmpeg):
-            return bundled_ffmpeg
-        return shutil.which("ffmpeg")
+        modern_path, legacy_path = get_bundled_ffmpeg_paths()
+        return modern_path or legacy_path
     
     def _parse_progress(self, line: str, duration: float = None) -> Optional[float]:
         time_match = re.search(r"time=(\d+):(\d+):(\d+\.?\d*)", line)

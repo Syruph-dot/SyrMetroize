@@ -51,7 +51,7 @@ class CollapsibleFrame(ttk.Frame):
 
 
 class MainWindow:
-    def __init__(self, ffmpeg_path: str = "ffmpeg"):
+    def __init__(self, ffmpeg_path: str):
         self.ffmpeg_path = ffmpeg_path
         self.pipeline: Optional[EncodingPipeline] = None
         self.is_encoding = False

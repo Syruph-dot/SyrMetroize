@@ -14,7 +14,7 @@ from ..config.types import (
 
 
 class FFmpegCommandBuilder:
-    def __init__(self, ffmpeg_path: str = "ffmpeg", legacy_mode: bool = True):
+    def __init__(self, ffmpeg_path: str, legacy_mode: bool = True):
         self.ffmpeg_path = ffmpeg_path
         self._ffmpeg_dir = os.path.dirname(os.path.abspath(ffmpeg_path))
         self._legacy_mode = legacy_mode

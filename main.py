@@ -7,6 +7,8 @@ import os
 import sys
 import argparse
 
+from ffmpeg_paths import resolve_ffmpeg_path
+
 _package_dir = os.path.dirname(os.path.abspath(__file__))
 _parent_dir = os.path.dirname(_package_dir)
 if _parent_dir not in sys.path:
@@ -14,17 +16,7 @@ if _parent_dir not in sys.path:
 
 
 def get_default_ffmpeg_path() -> str:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    ffmpeg_legacy_path = os.path.join(script_dir, "ffmpeg0.6", "ffmpeg.exe")
-    if os.path.exists(ffmpeg_legacy_path):
-        return ffmpeg_legacy_path
-    
-    ffmpeg_new_path = os.path.join(script_dir, "ffmpeg", "ffmpeg.exe")
-    if os.path.exists(ffmpeg_new_path):
-        return ffmpeg_new_path
-    
-    return "ffmpeg"
+    return resolve_ffmpeg_path()
 
 
 def main():
@@ -94,7 +86,11 @@ def main():
     
     args = parser.parse_args()
     
-    ffmpeg_path = args.ffmpeg or get_default_ffmpeg_path()
+    try:
+        ffmpeg_path = resolve_ffmpeg_path(args.ffmpeg)
+    except Exception as e:
+        print(f"FFmpeg path error: {e}", file=sys.stderr)
+        return 2
     
     if args.cli:
         from syrmetroize.config.presets import get_preset

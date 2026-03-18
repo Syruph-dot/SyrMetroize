@@ -11,19 +11,17 @@ import shutil
 import subprocess
 from typing import Callable, List, Optional
 
+from ..ffmpeg_paths import is_allowed_bundled_ffmpeg
+
 
 def _discover_ffmpeg_path(preferred_path: Optional[str] = None) -> Optional[str]:
     candidates = []
-    if preferred_path:
+    if preferred_path and is_allowed_bundled_ffmpeg(preferred_path):
         candidates.append(preferred_path)
 
     package_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     candidates.append(os.path.join(package_dir, "ffmpeg", "ffmpeg.exe"))
     candidates.append(os.path.join(package_dir, "ffmpeg0.6", "ffmpeg.exe"))
-
-    system_ffmpeg = shutil.which("ffmpeg")
-    if system_ffmpeg:
-        candidates.append(system_ffmpeg)
 
     for path in candidates:
         if path and os.path.exists(path):
