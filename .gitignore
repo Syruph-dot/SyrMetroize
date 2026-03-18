@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Bundle policy
+# Ignore modern ffmpeg bundle in this repo
+ffmpeg/
+
+# Keep legacy ffmpeg0.6 bundle tracked
+!ffmpeg0.6/
+!ffmpeg0.6/**
